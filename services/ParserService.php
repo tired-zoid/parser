@@ -24,7 +24,20 @@ class ParserService
         $browser = $userAgent->ua->family ?? 'Unknown';
         $os = $userAgent->os->family ?? 'Unknown';
 
-        $arch = str_contains($matches['agent'], 'x86_64') ? 'x64' : 'x86';
+        $ua = strtolower($matches['agent']);
+
+        $arch = match (true) {
+            str_contains($ua, 'win64'),
+            str_contains($ua, 'x64'),
+            str_contains($ua, 'amd64'),
+            str_contains($ua, 'wow64') => 'x64',
+
+            str_contains($ua, 'i386'),
+            str_contains($ua, 'i686'),
+            str_contains($ua, 'x86') => 'x86',
+
+            default => 'unknown',
+        };
 
         return [
             'ip' => $matches['ip'],

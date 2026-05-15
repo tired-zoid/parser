@@ -41,7 +41,7 @@ class LogImportService
     {
         Yii::$app->db->createCommand()
             ->batchInsert('logs',
-                ['ip','requested_at','url','user_agent','os','architecture','browser'],
+                ['ip','requested_at','url','user_agent','browser','os','architecture'],
                 $batch)
             ->execute();
     }
