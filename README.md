@@ -77,13 +77,13 @@ php yii migrate
 ## Загрузка логов
 
 ```bash
-php yii/log/parse /path/to/nginx/access.log
+php yii log/import /path/to/nginx/access.log
 ```
 
 Пример:
 
 ```bash
-php yii/log/parse /var/log/nginx/access.log
+php yii log/import /var/log/nginx/access.log
 ```
 
 ## Запуск веб-приложения
