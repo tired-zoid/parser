@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\LogSearch;
 use Yii;
 use app\models\ContactForm;
 use app\models\LoginForm;
@@ -76,11 +77,41 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex(): string
+    public function actionIndex()
     {
-        return $this->render('index');
-    }
+        $searchModel = new LogSearch();
 
+        if ($searchModel->load(Yii::$app->request->get(), '')) {
+            $searchModel->validate();
+        }
+
+        $sortColumn = Yii::$app->request->get('sort', 'date');
+        $sortOrder = Yii::$app->request->get('order', 'DESC');
+
+        $allowedColumns = ['date', 'requests', 'top_url', 'top_browser'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'date';
+        }
+        $sortOrder = strtoupper($sortOrder) === 'ASC' ? 'ASC' : 'DESC';
+
+        $requestsByDate = $searchModel->getRequestsByDate();
+        $topBrowsers = $searchModel->getTopBrowsers();
+        $tableData = $searchModel->getTableData($sortColumn, $sortOrder);
+
+        $osList = LogSearch::getUniqueOs();
+        $archList = LogSearch::getUniqueArchitectures();
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'requestsByDate' => $requestsByDate,
+            'topBrowsers' => $topBrowsers,
+            'tableData' => $tableData,
+            'osList' => $osList,
+            'archList' => $archList,
+            'sortColumn' => $sortColumn,
+            'sortOrder' => $sortOrder,
+        ]);
+    }
     /**
      * Login action.
      *
